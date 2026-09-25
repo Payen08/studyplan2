@@ -1,0 +1,448 @@
+{
+  "english-i": {
+    "2010": {
+      "path": "references/papers/english-i/2010",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2011": {
+      "path": "references/papers/english-i/2011",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2012": {
+      "path": "references/papers/english-i/2012",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2013": {
+      "path": "references/papers/english-i/2013",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2014": {
+      "path": "references/papers/english-i/2014",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2015": {
+      "path": "references/papers/english-i/2015",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2016": {
+      "path": "references/papers/english-i/2016",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2017": {
+      "path": "references/papers/english-i/2017",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2018": {
+      "path": "references/papers/english-i/2018",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2019": {
+      "path": "references/papers/english-i/2019",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2020": {
+      "path": "references/papers/english-i/2020",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2021": {
+      "path": "references/papers/english-i/2021",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2022": {
+      "path": "references/papers/english-i/2022",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2023": {
+      "path": "references/papers/english-i/2023",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2024": {
+      "path": "references/papers/english-i/2024",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2025": {
+      "path": "references/papers/english-i/2025",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2026": {
+      "path": "references/papers/english-i/2026",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    }
+  },
+  "english-ii": {
+    "2010": {
+      "path": "references/papers/english-ii/2010",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2011": {
+      "path": "references/papers/english-ii/2011",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2012": {
+      "path": "references/papers/english-ii/2012",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2013": {
+      "path": "references/papers/english-ii/2013",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2014": {
+      "path": "references/papers/english-ii/2014",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2015": {
+      "path": "references/papers/english-ii/2015",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2016": {
+      "path": "references/papers/english-ii/2016",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2017": {
+      "path": "references/papers/english-ii/2017",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2018": {
+      "path": "references/papers/english-ii/2018",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2019": {
+      "path": "references/papers/english-ii/2019",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2020": {
+      "path": "references/papers/english-ii/2020",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2021": {
+      "path": "references/papers/english-ii/2021",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2022": {
+      "path": "references/papers/english-ii/2022",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2023": {
+      "path": "references/papers/english-ii/2023",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2024": {
+      "path": "references/papers/english-ii/2024",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2025": {
+      "path": "references/papers/english-ii/2025",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    },
+    "2026": {
+      "path": "references/papers/english-ii/2026",
+      "sections": [
+        "cloze",
+        "reading-text-1",
+        "reading-text-2",
+        "reading-text-3",
+        "reading-text-4",
+        "new-question-type",
+        "translation",
+        "writing"
+      ]
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "kaoyan-english",
+  "version": "0.1.0",
+  "description": "Echo_考研英语SKILL：面向考研英语一与英语二的真题精析、全文翻译、翻译与作文批改、模拟训练插件。",
+  "author": {
+    "name": "nghjjnjnf",
+    "email": "junyaozz@sjtu.edu.cn",
+    "url": "https://github.com/nghjjnjnf"
+  },
+  "homepage": "https://github.com/nghjjnjnf/echo-kaoyan-english-skill",
+  "repository": "https://github.com/nghjjnjnf/echo-kaoyan-english-skill",
+  "keywords": [
+    "codex",
+    "agent-skill",
+    "kaoyan",
+    "english",
+    "考研英语",
+    "英一",
+    "英二",
+    "阅读",
+    "全文翻译",
+    "重点词汇",
+    "固定搭配",
+    "完形",
+    "完型",
+    "翻译",
+    "作文批改",
+    "外刊出题",
+    "模拟阅读",
+    "模拟完形",
+    "模拟完型",
+    "抓取文章",
+    "保存练习记录",
+    "错题复盘"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Echo_考研英语SKILL",
+    "shortDescription": "真题证据链解析、全文翻译与模拟训练",
+    "longDescription": "Echo_考研英语SKILL 针对考研英语一和英语二，提供阅读与完形逐题证据链解析、阅读/完形全文翻译、重点词汇与固定搭配讲解、翻译评分、作文分档批改、可控词汇难度的模拟训练、练习保存和错题复盘。",
+    "developerName": "nghjjnjnf",
+    "category": "Education",
+    "capabilities": [],
+    "defaultPrompt": [
+      "讲解 2025 年英一阅读 Text 1 第 21 题。注意旧版曾出现回答过于简略的问题，请按阅读模板完整解析。",
+      "按考研英语标准批改我的作文并逐句修改。",
+      "生成一篇考研难度的外刊模拟阅读题。"
+    ],
+    "brandColor": "#13795B"
+  }
+}

@@ -1,605 +1,219 @@
-# HANDOFF
+# 项目交接文档 (HANDOFF)
 
-最后更新：2026-08-11  
-工作目录：`/Users/mac/Downloads/study-plan-main 1`
+> **文档性质**：本交接文档针对当前全新重构迭代的考研备考学习规划系统（React + TypeScript + Vite 架构），专为没有前期上下文的新会话编写。在着手修改任何代码前，请务必完整阅读本文档。
 
-这份文档写给一个完全没有上下文的新会话。先读完再改代码，尤其是 `studyplan-github.html`、`index.html`、PWA、Supabase 同步这几块很容易踩坑。
+---
 
-## 1. 任务目标
+## 1. 任务目标与产品定位
 
-这个项目是一个考研学习计划工具，核心是：
+本项目是一款专为考研学子打造的高性能备考日程与学习规划工具，现已从早期单文件 HTML 原型全面重构升级为现代化的 **React 18 + TypeScript + Vite + Hero UI 视觉规范** 单页应用。
 
-- 日历任务管理：按日期记录学习任务、完成状态、每日笔记。
-- 多维笔记本：以 `科目 -> 文件夹 -> 笔记` 组织，而不是纯日期驱动。
-- 日历辅助视图：当天写过/关联过的多维笔记会投影到当天日历笔记里，方便看“某天写了哪些笔记”。
-- 云端同步：通过 Supabase 的 `study_progress` 表同步所有状态。
-- PWA/GitHub Pages 使用：最终部署目标是 `https://payen08.github.io/study-plan/`，本地 `studyplan-github.html` 只是测试文件名。
-- AI 学习伙伴：悬浮入口，不是独立 AI 页面。它读取当前学习状态、笔记、任务完成情况，给出计划、复盘、任务写入和提醒。
+### 核心功能矩阵
+- **控制台（Dashboard）**：倒计时、今日待办清单、科目进度环与学习状态走势。
+- **AI 伴学（AiChat）**：备考 AI 助手，支持自由输入任意大模型 ID、高中低三档调节、深度思考模式（Thinking Mode），能够自然语言生成 33 题全真模拟试卷并支持一键排期。
+- **全真模考系统（Mocks & OnlineExamModal）**：支持 Prompt 生成考研政治等 33 题全真选择题试卷，提供专业在线考场（倒计时、答题卡跳题、单选/多选评分、名师精解），成绩实时录入模考折线图。
+- **知识大纲（Subjects）**：以考研科目为单位拆解章节与专题考点，具备掌握度追踪与大纲模板一键导入能力。
+- **真题题库（Papers）**：年份历年真题管理、多刷作答记录与年份对比。
+- **复习计划（Plans）**：日历任务网格与每日时段待办编排。
+- **薄弱项（Weaknesses）**：错题诊断与知识点攻坚。
+- **资料库（Library）**：备考 PDF 与外部链接资源库。
 
-用户最近的产品想法：
+---
 
-```text
-你提供考试日期、科目、每天可用时间
-↓
-AI 生成备考计划，直接写入日历任务
-↓
-每天主动提醒今日任务
-↓
-你完成任务 + 记笔记
-↓
-AI 理解进度，动态调整计划
-↓
-你随时可以聊：今天没状态 / 这题不会 / 进度够吗
-```
-
-交互原则：AI 是右下角悬浮对话入口；主动提醒出现在日历视图里，不要做一个单独的“AI 页面”。
-
-## 2. 当前文件状态
-
-主要文件：
-
-- `studyplan-github.html`：当前主要开发文件，最新功能都在这里。
-- `index.html`：GitHub Pages 生产入口，但当前文件大小明显旧于 `studyplan-github.html`，不要假设它已经同步。
-- `studypro.html`：早期修好云同步问题的参考版本。
-- `manifest.json`：PWA manifest，目前指向 `/study-plan/`。
-- `sw.js`：PWA service worker，已经改成 HTML/Supabase 网络优先，避免 PWA 旧缓存。
-- `supabase/functions/study-buddy/index.ts`：AI 对话 Edge Function。
-- `supabase/functions/study-push/index.ts`：微信/Server 酱推送 Edge Function。
-- `supabase_ai_setup.sql`：AI + 推送相关 SQL/Secrets/cron 说明。
-- `supabase_setup.sql`：旧版 Supabase setup，可参考但不要盲跑。
-- `Bold/...`：图标资源目录，之前日历添加/笔记 icon 从这里换过。
-
-Git 状态：
-
-- 当前目录已经有 `.git`，但 `git status --short` 显示几乎所有文件都是 untracked。
-- 也就是说这个本地仓库可能是后来 `git init` 的，不要用 `git reset --hard`、`git checkout --` 等破坏性命令。
-- 如果要发布 GitHub，先确认远程仓库是用户指定的：`https://github.com/Payen08/study-plan.git`。
-
-重要命名提醒：
-
-- 用户强调过：`studyplan-github.html` 只是本地测试名。
-- GitHub Pages 真正入口应是 `index.html`。
-- 发布前通常需要把确认好的 `studyplan-github.html` 同步/复制成 `index.html`，否则 GitHub 上看不到最新改动。
-
-## 3. 已完成内容
-
-### 3.1 Supabase 云同步/PWA 修复
-
-已做过这些方向的修复：
-
-- Supabase 状态统一存在 `public.study_progress` 的 `data jsonb` 中。
-- 前端历史上遇到过 `study_progress?id=eq.payen 400 Bad Request`、`on_conflict=id 400`、`flushCloudQueue undefined lastErr` 等问题，后来已修过。
-- 云端同步 ID 用户常用的是 `payen`。
-- 云端表早期确认过只有 `id text` 和 `data jsonb`，没有 `updated_at`。但现在 `supabase_ai_setup.sql` 会创建/补充 `updated_at`。不要在不知道 SQL 是否已执行的情况下依赖 `updated_at`。
-- PWA 旧缓存导致固定在屏幕上的 PWA 不实时刷新云端内容，后来 `sw.js` 改为：
-  - Supabase 请求不缓存。
-  - HTML/document 请求 `no-store`。
-  - 只缓存静态非 HTML 资源。
-- `manifest.json` 当前配置：
-  - `id`: `/study-plan/`
-  - `start_url`: `/study-plan/?v=sync-fix-2026-04-27-pwa-refresh-v2`
-  - `scope`: `/study-plan/`
-
-注意：
-
-- 本地用 `file://` 打开时，manifest 会因为 CORS 报错。`studyplan-github.html` 里后来做过 file origin 下移除 manifest href 的逻辑。
-- 真正测试 PWA/Service Worker/manifest，最好用本地 http server 或 GitHub Pages，不要只用 `file://`。
-
-### 3.2 日历 UI 修复
-
-用户之前连续反馈过日历手机视角问题，已做过的方向包括：
-
-- 日历添加/笔记 icon 换成用户指定 SVG：
-  - `Bold/Essentional, UI/Add Square.svg` 用作添加 icon。
-  - `Bold/Notes/Document Add.svg` 用作笔记 icon。
-- icon 在 web 正常、手机太小的问题已调过，目标至少接近 `28px`。
-- 黄色 icon 改成蓝色系。
-- 手机端三杠菜单挡住日历笔记编辑，已调过浮动菜单/底部遮挡。
-- 过去日期不再置灰。
-- 今日标签曾在 iPad 被截断，后来思路改成更像日历：用圈住当天数字的方式弱化“今日”标签。
-
-2026-08-11 本轮移动端修复：
-
-- 账号登录 UI 暂时隐藏（登录门禁、账号弹窗、底部账号入口）；底层 Supabase 同步与认证代码保留。
-- 吸顶月份导航改为避让 `safe-area-inset-top`，解决 iPhone/PWA 滚动后月份被状态栏遮挡。
-- 当前月份在导航渲染后自动滚动到可视区域中央。
-- 快捷菜单展开时提高遮罩/面板层级，并让 AI 悬浮按钮退出点击层，避免菜单项被遮挡或点错。
-- 手机端日历操作按钮与月份按钮的点击区域提升到至少 `44px`。
-- `file://` 直开时状态明确显示“本地模式”；PWA 图标和 manifest 初始化也会完全跳过，避免独立安全源警告。
-- Supabase 首次连接超过 5 秒时不再被判为永久离线，慢启动请求会继续完成，并保留 focus/每分钟自动重试。
-- 新增 `.github/workflows/supabase-keepalive.yml`：每天北京时间 09:17 对 `study_progress` 发起一次只读查询，并可在 Actions 页面手动触发。仓库需要配置 GitHub Actions Secret `SUPABASE_ANON_KEY`。
-
-### 3.3 多维笔记本数据模型
-
-核心模型已经从“日期驱动”转为：
+## 2. 核心架构与关键文件索引
 
 ```text
-科目 -> 文件夹 -> 笔记
+/Users/mac/Downloads/原型APP/study-plan-main新版本迭代/
+├── src/
+│   ├── components/
+│   │   ├── ui.tsx                  # Hero UI 基础组件库（Chip, Modal, Empty, Progress, CircularProgress）
+│   │   ├── OnlineExamModal.tsx      # 【重点】全真在线考场组件（倒计时、答题卡、即时评分、解析、同步模考）
+│   │   ├── AiQuizModal.tsx          # 弹窗式轻量随堂测验组件（5~10题速测）
+│   │   ├── Layout.tsx               # 全局侧边栏、吸顶固定顶栏及路由骨架
+│   │   └── DailyNoteModal.tsx       # 每日笔记与复盘弹窗
+│   ├── pages/
+│   │   ├── AiChat.tsx               # 【重点】AI 伴学工作台、自定义模型配置、Prompt 出卷卡片
+│   │   ├── Dashboard.tsx            # 控制台大屏、任务打卡
+│   │   ├── Mocks.tsx                # 【重点】模考成绩记录、总分走势折线图、AI 全真模拟试卷库
+│   │   ├── Subjects.tsx             # 【重点】科目大纲管理、Hero UI 环形掌握进度
+│   │   ├── Papers.tsx               # 历年真题题库、多刷记录
+│   │   ├── Plans.tsx                # 复习任务日历视图
+│   │   ├── Weaknesses.tsx           # 薄弱项与错题库
+│   │   └── Library.tsx              # 备考资源库
+│   ├── data/
+│   │   ├── DataContext.tsx          # 全局响应式状态与数据持久化（localStorage + Supabase 同步）
+│   │   ├── mockPaperStore.ts        # 【重点】33题考研政治全真模拟试卷库与试卷本地存储
+│   │   └── helpers.ts               # 日期倒计时、科目进度换算等辅助函数
+│   ├── styles.css                   # 全局样式，包含完整 Hero UI 设计令牌与深浅色模式变量
+│   ├── App.tsx                      # 根路由与 Global ErrorBoundary
+│   └── types.ts                     # TypeScript 全局数据模型声明
 ```
 
-同时保持日历映射：
-
-- 每条 notebook entry 有 `dateKey` 和 `linkedDateKeys`。
-- 日历查看某天时，会通过 `getNotebookEntriesByDate(dateKey)` 找到：
-  - `entry.dateKey === dateKey`
-  - 或 `entry.linkedDateKeys.includes(dateKey)`
-- 这样“今天写过的多维笔记”可以投影到当天日历笔记中。
-
-状态字段大致是：
-
-```js
-state.notebookFolders = {
-  [folderId]: {
-    id,
-    subjectType,
-    name,
-    createdAt,
-    updatedAt
-  }
-}
-
-state.notebookEntries = {
-  [entryId]: {
-    id,
-    subjectType,
-    folderId,
-    dateKey,
-    linkedDateKeys,
-    title,
-    html,
-    content,
-    pinned,
-    createdAt,
-    updatedAt
-  }
-}
-```
-
-已实现：
-
-- 自动为每个科目创建默认文件夹。
-- 旧 notebook entries 自动补齐 `subjectType`、`folderId`、`dateKey`、`linkedDateKeys`、`pinned`。
-- 新建文件夹。
-- 新建笔记。
-- 将笔记移动到当前科目的其他文件夹。
-- 笔记标星置顶：`entry.pinned = true`，排序时星标优先。
-- 编辑页删除当前笔记。
-- 笔记列表卡片上直接删除，不必先进编辑页。
-- 删除会弹确认，避免误删。
-
-相关函数可搜索：
-
-- `ensureNotebookFolders`
-- `getNotebookFoldersBySubject`
-- `getNotebookEntriesByFolder`
-- `renderNotebookFolders`
-- `renderNotebookEntries`
-- `moveNotebookEntryToFolder`
-- `toggleNotebookStar`
-- `deleteCurrentNotebookEntry`
-- `deleteNotebookEntryFromList`
-- `commitNotebookDraft`
-
-### 3.4 多维笔记本 UI/交互
-
-用户明确不喜欢早期桌面左侧常驻栏，最后改成手机同款分步交互。
-
-当前交互：
-
-```text
-打开多维笔记本
-↓
-选择文件夹：科目 chip + 文件夹宫格 + 新增文件夹卡片
-↓
-进入文件夹：笔记列表 + 新建笔记
-↓
-进入笔记：编辑器整屏显示
-```
-
-已做的 UI 调整：
-
-- 桌面端也使用分步交互，不再左右栏常驻编辑器。
-- 文件夹卡片是正方形网格。
-- “新增文件夹”是同级正方形卡片，灰色虚线描边，显示 `+` 和“新增文件夹”。
-- 新建文件夹不再是圆形按钮，也不再有浅蓝底。
-- 笔记列表卡片：
-  - 标题一行。
-  - 内容最多三行。
-  - 内容普通字重，不加粗。
-  - 选中态去浅蓝底，改白底 + 蓝色描边/内阴影。
-  - 卡片右上角可直接删除。
-  - 星标笔记显示星星，且置顶。
-- 编辑器顶部：
-  - 左侧返回。
-  - 标题显示科目。
-  - 文件夹下拉用于移动当前笔记。
-  - 右侧有星标、删除、关闭。
-- 文件夹下拉箭头：
-  - 已隐藏原生箭头。
-  - 使用自定义 SVG 背景箭头。
-  - 右侧留出边距，最近调整为 desktop `right 16px center`，mobile `right 14px center`。
-
-最近一次 UI 改动：
-
-- 日历查看模式中 `来自 Notebook` 投影块字体变小、行距变大：
-  - `.projection-text` 字号 `15px`
-  - line-height `1.9`
-  - 段落间距 `14px`
-  - `font-weight: 400`
-  - 覆盖了旧的 `#note-editor .projection-text { line-height: 1.45 }`
-
-### 3.5 日历查看模式中的多维笔记投影
-
-日历每日笔记里会追加一块：
-
-```html
-<section class="notebook-projection" data-notebook-projection="1" contenteditable="false">
-  <div class="projection-head">来自 Notebook</div>
-  ...
-</section>
-```
-
-相关函数：
-
-- `buildProjectionHtml(dateKey)`
-- `getRenderedNoteHtml(dateKey, ensureEditableSlot = false)`
-- `stripProjectionHtml(html)`
-- `syncNotebookProjectionEdits()`
-
-注意：
-
-- 投影块原则上是从 notebook entries 渲染出来的，不应直接保存为普通每日笔记正文。
-- `stripProjectionHtml()` 用来避免把投影 HTML 写回 `state.notes`。
-- 如果改日历笔记保存逻辑，要小心不要把投影内容复制进 daily note，造成重复。
-
-### 3.6 AI 学习伙伴
-
-当前 `studyplan-github.html` 里已经有 AI 学习伙伴代码，不只是 prompt 草案。
-
-### 3.7 墨墨查词联动
-
-2026-08-11 新增第一版墨墨联动：
-
-- Supabase Edge Function：`supabase/functions/maimemo-proxy/index.ts`。
-- Token 只从 Supabase Secret `MAIMEMO_API_TOKEN` 读取，不写入前端。
-- 生产域名默认限制为 `https://payen08.github.io`，本地允许 localhost；只开放只读查词。
-- Study Plan 全局搜索输入英文单词时，会同时查询墨墨词汇、自定义释义、助记和例句。
-- 墨墨没有返回自定义释义时，显示 AI 解释入口；开放 API 不提供 App 内置词典释义。
-- 查词结果可保存为英语科目的多维笔记。
-- 前端 450ms 防抖，Edge Function 按 IP 限流并缓存 5 分钟，以遵守墨墨频控。
-
-可搜索：
-
-- `AI 学习伙伴`
-- `ai-buddy-fab`
-- `AI_API_ENDPOINT`
-- `STUDY_PUSH_ENDPOINT`
-- `DEFAULT_AI_BUDDY`
-- `collectNotebookProgress`
-- `buildAiSystemPrompt`
-- `create_tasks`
-- `create_reminders`
-- `appendToNotebookEntry`
-- `createNotebookFromSelection`
-
-前端默认 endpoints：
-
-```js
-const AI_API_ENDPOINT = `${SUPABASE_URL}/functions/v1/study-buddy`;
-const STUDY_PUSH_ENDPOINT = `${SUPABASE_URL}/functions/v1/study-push`;
-```
-
-当前 build tag：
-
-```text
-wechat-push-debug-2026-05-28-v1
-```
-
-AI 已实现/设计中的能力：
-
-- 右下角 AI 悬浮按钮。
-- AI 聊天面板。
-- AI 资料/配置面板：考试日期、每天可用小时、目标院校/专业、科目基础、模考成绩、API 地址、模型、微信推送配置。
-- 收集上下文：
-  - 考试剩余天数。
-  - 今日任务完成情况。
-  - 本周任务完成情况。
-  - 笔记进度。
-  - 多维笔记结构/进度。
-  - 历史对话摘要。
-- 模型输出 `create_tasks` 时自动写入日历任务。
-- 模型输出 `create_reminders` 时自动写提醒。
-- 用户选中 AI 回复文字后，可以加入/追加到多维笔记本。
-- 笔记检索/RAG 逻辑：会从每日笔记和 notebook entries 搜相关片段塞进 prompt。
-
-Edge Functions：
-
-- `supabase/functions/study-buddy/index.ts`
-  - 代理 DeepSeek API。
-  - 支持 `modelPreset: flash/pro`。
-  - 支持 `thinking: enabled/disabled`。
-  - 提取模型回复中的 `create_tasks` / `create_reminders` actions。
-  - 绝不能把 DeepSeek API key 写进 HTML。
-- `supabase/functions/study-push/index.ts`
-  - 负责每日推送。
-  - 支持 Server 酱。
-  - 从 Supabase 中按 sync id 获取状态，生成今日任务/本周进度摘要。
-
-需要 Supabase Secrets：
-
-```text
-DEEPSEEK_API_KEY=sk-...
-DEEPSEEK_BASE_URL=https://api.deepseek.com
-DEEPSEEK_MODEL_FLASH=deepseek-v4-flash
-DEEPSEEK_MODEL_PRO=deepseek-v4-pro
-SERVERCHAN_SENDKEY=SCT...
-STUDY_PUSH_SYNC_ID=payen 或用户实际同步 ID
-STUDY_PUSH_TIMEZONE=Asia/Shanghai
-```
-
-需要部署：
-
-```bash
-supabase functions deploy study-buddy
-supabase functions deploy study-push
-```
-
-可选 SQL：`supabase_ai_setup.sql`，里面包含：
-
-- `study_progress` 表创建/补充。
-- RLS policy。
-- `updated_at` trigger。
-- `pg_cron` + `pg_net` 定时推送示例。
-
-## 4. 当前问题/未完成事项
-
-### 4.1 `studyplan-github.html` 与 `index.html` 未同步
-
-这是最重要的发布坑。
-
-当前 `studyplan-github.html` 很大，包含最新 AI 和 notebook UI；`index.html` 明显旧很多。用户最终上传 GitHub Pages 用的是 `index.html`，所以发布前必须确认：
-
-```bash
-cp studyplan-github.html index.html
-```
-
-或用用户认可的方式同步。
-
-不要反过来用旧 `index.html` 覆盖 `studyplan-github.html`。
-
-### 4.2 当前 Git 全部 untracked
-
-`git status --short` 显示所有文件未跟踪。新会话如果要提交，先确认用户是否希望初始化/提交整个项目。不要随便 `git add .`。
-
-建议提交前至少说明范围：
-
-- `studyplan-github.html`
-- `index.html`（如果已同步）
-- `manifest.json`
-- `sw.js`
-- `supabase/functions/...`
-- `supabase_ai_setup.sql`
-
-### 4.3 AI 端到端可能需要重新验证
-
-虽然前端和 Edge Functions 代码都在，但未确认当前 Supabase 项目：
-
-- Edge Functions 是否已 deploy 最新版本。
-- Secrets 是否齐全。
-- DeepSeek 模型名是否仍可用。
-- Server 酱 SendKey 是否有效。
-- 定时推送 cron 是否已开启。
-
-验证顺序建议：
-
-1. 在 AI 资料面板点“测试”。
-2. 看浏览器 console 是否有 `AI API` 错误。
-3. 直接测试 Edge Function：`study-buddy`。
-4. 再测试 `study-push` dryRun/test。
-5. 最后再测定时推送。
-
-### 4.4 Supabase 表结构不要想当然
-
-用户以前在 SQL 编辑器查过：
-
-```sql
-select column_name, data_type
-from information_schema.columns
-where table_schema='public' and table_name='study_progress'
-order by ordinal_position;
-```
-
-当时结果只有：
-
-```text
-id text
-data jsonb
-```
-
-后来 `supabase_ai_setup.sql` 会补 `updated_at`。所以如果新会话要写 SQL 或查询，不要默认线上已经有 `updated_at`，先查表结构。
-
-### 4.5 文件夹/笔记删除还需要真实数据回归
-
-列表直接删除按钮已加，但最近浏览器验证时当前文件夹没有笔记，所以只验证了代码/语法，没有实际点删除。需要用有笔记的文件夹回归：
-
-- 点击列表卡片是否仍打开笔记。
-- 点击垃圾桶是否只弹删除确认，不打开笔记。
-- 删除后是否停留在笔记列表。
-- 删除星标笔记后排序是否正常。
-- 删除后是否同步到 Supabase。
-
-### 4.6 投影块样式需要视觉确认
-
-最近刚改了日历查看模式的 Notebook 投影样式：字体小、行距大。需要用户肉眼确认是否舒服。可能还要调：
-
-- `font-size: 14px` 或 `15px`。
-- `line-height: 1.8` 或 `1.9`。
-- 段落间距 `12px` 或 `14px`。
-
-## 5. 下一步计划
-
-建议按这个顺序继续：
-
-1. **视觉回归**
-   - 打开 `studyplan-github.html`。
-   - 测日历查看模式的 Notebook 投影块。
-   - 测多维笔记本：文件夹页、笔记列表、编辑器页、暗黑模式、手机/iPad 视角。
-
-2. **功能回归**
-   - 新建文件夹。
-   - 新建笔记。
-   - 移动笔记到其他文件夹。
-   - 标星/取消标星。
-   - 列表直接删除。
-   - 编辑页删除。
-   - 日历当天是否显示多维笔记投影。
-   - 云端保存后刷新/换浏览器是否能看到。
-
-3. **AI 伙伴回归**
-   - 打开 AI 面板。
-   - 资料面板保存配置。
-   - API 测试。
-   - 发送一句普通对话。
-   - 让 AI 生成任务，确认能写入日历。
-   - 选中 AI 回复片段加入多维笔记。
-   - 测试提醒/Server 酱。
-
-4. **发布准备**
-   - 确认 `studyplan-github.html` 是用户认可版本。
-   - 同步到 `index.html`。
-   - 如改 PWA 行为，更新 `BUILD_TAG`、`manifest.json` start_url 版本和 `sw.js` cache name。
-   - 再提交并推送到 `Payen08/study-plan.git`。
-
-## 6. 踩过的坑
-
-### 6.1 不要把 `studyplan-github.html` 当生产路径
-
-用户非常明确：`studyplan-github.html` 只是本地命名。真实 GitHub Pages 入口是 `index.html`。
-
-### 6.2 不要把 PWA scope 写成本地文件名
-
-以前误把 manifest/sw 指向 `studyplan-github.html`，用户指出这是错的。GitHub Pages 应该是 `/study-plan/`。
-
-### 6.3 `file://` 会导致 manifest/CORS 问题
-
-本地 file 打开时浏览器会报：
-
-```text
-Access to manifest at file:///.../manifest.json from origin null has been blocked by CORS policy
-```
-
-这是 file origin 的限制。PWA/manifest 正式验证请用 http 或 GitHub Pages。
-
-### 6.4 PWA 固定图标容易看到旧云端数据
-
-原因通常是 service worker 缓存 HTML 或 Supabase 响应。现在 `sw.js` 已尽量避免缓存 HTML 和 Supabase，但发布后仍可能需要：
-
-- 更新 `CACHE_NAME`。
-- 更新 `BUILD_TAG`。
-- 强刷。
-- 删除旧 PWA 后重新添加。
-
-### 6.5 Supabase 400 不一定是前端字段错
-
-历史上出现过：
-
-```text
-POST /rest/v1/study_progress?on_conflict=id 400
-PATCH /rest/v1/study_progress?id=eq.payen 400
-```
-
-排查顺序：
-
-1. 表是否存在。
-2. `id` 是否 text。
-3. `data` 是否 jsonb。
-4. RLS policy 是否允许 anon select/insert/update。
-5. 前端是不是写了线上表没有的列，比如 `updated_at`。
-6. payload 是否过大或格式非法。
-
-### 6.6 Notebook 投影不要重复写回 daily note
-
-日历笔记查看模式的 `来自 Notebook` 是投影，不是 daily note 原文。保存 daily note 时必须去掉 `data-notebook-projection`，否则刷新后会重复。
-
-### 6.7 不要用本地规则冒充 AI
-
-AI API 失败时，当前前端会显示错误详情，不应该用本地 fallback 假装模型回答。用户要的是“真正了解进度的 AI”，不是模板建议。
-
-### 6.8 UI 方向偏好
-
-用户对 UI 很敏感，几个明确偏好：
-
-- 不喜欢浅蓝大面积底色。
-- 不喜欢黄色 icon。
-- 不喜欢 web 上笨重的左侧栏布局。
-- 喜欢手机同款分步交互。
-- 文件夹更适合正方形卡片。
-- 新建文件夹应该像一个同级卡片，不是圆形小按钮。
-- 框内内容不要过度加粗。
-- 间距和图标大小要认真看手机/iPad。
-
-## 7. 快速检查命令
-
-语法检查 HTML 内联脚本：
-
-```bash
-node - <<'NODE'
-const fs=require('fs');
-const html=fs.readFileSync('studyplan-github.html','utf8');
-const scripts=[...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
-let ok=true;
-scripts.forEach((code,i)=>{try{new Function(code)}catch(e){ok=false;console.error(`script ${i+1}: ${e.message}`)}});
-console.log(ok ? `OK: parsed ${scripts.length} inline scripts` : 'FAILED');
-NODE
-```
-
-本地 HTTP 预览：
-
-```bash
-cd "/Users/mac/Downloads/study-plan-main 1"
-python3 -m http.server 8766 --bind 127.0.0.1
-```
-
-打开：
-
-```text
-http://127.0.0.1:8766/studyplan-github.html
-```
-
-Supabase 表结构检查：
-
-```sql
-select column_name, data_type
-from information_schema.columns
-where table_schema='public' and table_name='study_progress'
-order by ordinal_position;
-```
-
-获取当前 build tag：
-
-```bash
-rg -n "BUILD_TAG" studyplan-github.html
-```
-
-查关键 notebook 代码：
-
-```bash
-rg -n "renderNotebookEntries|toggleNotebookStar|deleteNotebookEntryFromList|moveNotebookEntryToFolder|notebook-projection" studyplan-github.html
-```
-
-查 AI 代码：
-
-```bash
-rg -n "AI_API_ENDPOINT|buildAiSystemPrompt|create_tasks|study-push|collectNotebookProgress" studyplan-github.html supabase/functions
-```
-
-## 8. 接手时的建议开场
-
-如果新会话继续接这个项目，建议先做：
-
-1. 读 `HANDOFF.md`。
-2. 跑 HTML 内联脚本语法检查。
-3. 用浏览器打开 `studyplan-github.html`，确认当前用户看到的问题。
-4. 修改只动必要区域，不要大面积重构。
-5. 修改后再语法检查 + 浏览器回归。
-6. 发布前问用户是否把 `studyplan-github.html` 同步到 `index.html`。
+---
+
+## 3. 本轮会话完成的核心工作
+
+### 3.1 运行时白屏与崩溃排查
+- **问题**：进入 `Dashboard` 时触发 `ReferenceError: settings is not defined` 与 `ReferenceError: todayDateStr is not defined` 导致 React 组件树抛错白屏。
+- **修复**：对状态引用与空值进行严谨修复，在 `App.tsx` 强化了全局 `ErrorBoundary`。
+
+### 3.2 顶栏（Topbar）绝对平稳吸顶与页面视口修正
+- **问题**：原 `position: sticky` 容易受父级容器滚动或 `overflow` 劫持而随页面滚出屏幕。
+- **修复**：
+  - 将 `.topbar` 调整为现代 App 级别的 `position: fixed; top: 0; left: var(--sidebar); right: 0; z-index: 35;`（移动端自适应 `left: 0`）；
+  - 将 `.app-stage` 的滚动属性升级为 `overflow-x: clip;`，杜绝滚动条抢夺；
+  - `main` 内容区设置安全内边距 `calc(60px + 16px) 20px 20px`，任何长页面滚动时顶栏永远牢固吸顶。
+
+### 3.3 AI 伴学中心全面重构（AiChat.tsx）
+1. **视口与垂直节奏平衡**：
+   - 彻底解决之前“欢迎卡片被顶在顶部栏边缘、底部留出大片空洞”的垂直失衡问题；
+   - 在欢迎状态（`is-welcome`）使用弹性垂直居中（`justify-content: center`），首屏内容在任何屏幕尺寸下优雅居中。
+2. **大模型配置自由化**：
+   - 彻底废弃死板的写死下拉框，支持**用户自由输入任意模型名称**（如 `deepseek-chat`、`deepseek-reasoner`、`gpt-4o`、`claude-3-5-sonnet` 等），解决大模型快速换代问题；
+   - 增加 **高中低三档调节**（低档 / 中档 / 高档），对应底层 Temperature 与 Max Tokens 的阶梯优化；
+   - 增加 **深度思考模式开关（Thinking Mode）**，聊天输入框上方悬浮栏即时联动状态药丸。
+3. **文案极简去噪**：
+   - 移除输入框底部的灰色免责声明长句；
+   - 移除模型配置弹窗顶部的灰框长句；
+   - 选项文字去除了冗长的括号解释，保持纯粹的“低档 / 中档 / 高档”；
+   - 欢迎卡片副标题与描述文字全部精炼为简短直接的短句。
+
+### 3.4 Prompt 驱动的全真模拟考试系统与在线考场
+1. **全真标准试卷库（`mockPaperStore.ts`）**：
+   - 精编了 2027 考研政治 33 题全真模拟试卷（16 道单选 16 分 + 17 道多选 34 分，共 50 分），覆盖马原、毛中特、史纲、思修与当代时政；
+   - 支持本地存储与试卷扩展。
+2. **沉浸式在线考场（`OnlineExamModal.tsx`）**：
+   - 真实考场体验：50 分钟倒计时、答题进度条、交卷提醒；
+   - 1~33 题右侧悬浮**智能答题卡矩阵**，实时高亮已答/未答，点击任意题号直接跳题；
+   - 单选题互斥选、多选题支持复选与反选；
+   - 交卷后即时判分，提供详尽的考点解析；
+   - **一键同步至系统模考记录**：直接写入 `mock_exams` 与 `mock_scores`，模考总分折线图即时更新。
+3. **多入口打通**：
+   - 在 AI 伴学中发送 `帮我出一套政治33题模考`，AI 自动生成考试行动卡片，可一键开考；
+   - 在 `/mocks`（模考记录）顶部新增 **【AI 智能考场（全真模拟试卷库）】** 展架，随时开考或重考；
+   - 保持保留原有的轻量弹窗速测（`AiQuizModal.tsx`）。
+
+### 3.5 科目大纲页面（Subjects.tsx）Hero UI 视觉重构
+1. **彻底消除五颜六色的点**：
+   - 移除左侧科目列表前杂乱的彩点，依靠 Hero UI 规范的选中左侧指示条（`accent-bar`）与微弱柔和背景进行高亮；
+   - 移除右侧横幅大标题前的大圆点。
+2. **重塑进度百分比**：
+   - 左侧列表接入 Hero UI 标准的 `<Chip size="sm" variant="flat">` 组件（0% 为中性灰，1~99% 为 Accent 蓝，100% 为 Success 绿）；
+   - 卡片底部增加 2px 进度微条；
+   - 修复 hover 时删除图标由于高度挤压形似字符“8”的怪异排版 bug。
+3. **引入 Hero UI 标志性的 `CircularProgress` 组件**：
+   - 在 `src/components/ui.tsx` 中编写了完全符合 Hero UI 规范的 SVG 环形进度条组件；
+   - 替换横幅原先呆板的灰底方块与彩色文字，以精致的环形弧线动效与居中百分比展现掌握进度。
+
+### 3.6 全系统去除彩色圆点与 Emoji 表情
+- **消除全站彩色圆点**：排查并彻底移除了 `Papers.tsx`（真题筛选栏）、`Mocks.tsx`、`Plans.tsx`、`Weaknesses.tsx`、`Library.tsx` 及 `Dashboard.tsx` 中的所有 `SubjectDot`，并将 `SubjectDot` 组件设为 `return null`，全局 CSS 设置 `.subject-dot { display: none !important; }`。
+- **清除所有 Emoji 表情**：将全系统内所有用作 icon 的 Emoji（`💬`、`✍️`、`🎯`、`📝`、`📋`、`⚡`、`⚠️`、`💡` 等）全部替换为标准的 **Lucide 矢量 SVG 图标**（如 `<BotMessageSquare />`、`<PenTool />`、`<Sparkles />`、`<ArrowRight />` 等）。
+
+### 3.7 侧边栏收窄与可折叠展开架构（Layout.tsx & styles.css）
+- **侧边栏宽度精简**：从默认过宽的 `210px` 紧凑收窄至 `180px`，释放了 30px 主舞台空间，同时完美保留“错题 & 薄弱点”单行舒适排版（无折行、无截断）。
+- **折叠状态与图标轨（Icon Rail）**：
+  - 折叠至极简 `60px` 宽度，Logo 居中显示，所有导航项居中呈现代图标轨；
+  - 文字通过 `.nav-label` 进行平滑隐藏，每个导航项内置 `title` 属性，鼠标悬停即刻展现原生提示信息；
+  - Logo 在折叠状态下支持点击一键展开。
+- **多触点快捷控制**：
+  - 侧边栏品牌栏右侧配备 Lucide 矢量图标折叠按钮（`PanelLeftClose` / `PanelLeftOpen`）；
+  - 侧边栏底部设置区上方配备展开/收起切换项；
+  - 桌面端固定顶栏（Topbar）左侧同步配备快捷展开/收起按钮。
+- **纯 CSS 变量驱动与平滑联运动画**：
+  - `:root` 定义 `--sidebar: 180px; --sidebar-collapsed: 60px;`；
+  - `.app-shell.is-collapsed` 只需切换 `--sidebar: var(--sidebar-collapsed);`，即可让侧边栏宽度、主舞台左边距（`margin-left`）、主舞台最大宽度（`max-width`）与固定顶栏（`left: var(--sidebar)`）通过 `0.22s cubic-bezier(0.4, 0, 0.2, 1)` 完全同频丝滑联动。
+- **持久化与移动端响应式兼容**：
+  - 折叠状态自动保存至 `localStorage ('study_sidebar_collapsed')`；
+  - 移动端（`max-width: 760px`）通过媒体查询强制重置抽屉宽度与展开样式，避免桌面端折叠影响手机端全屏抽屉菜单。
+
+### 3.8 工作台 Hero UI 重构与模考真题整合（Dashboard.tsx & Papers.tsx）
+- **工作台彻底去任务化（去噪）**：
+  - 移除了今日任务打勾列表、打卡复选框、新建任务弹窗、阶段任务等琐碎待办模块，工作台回归纯粹宏观的“考情中控台”。
+- **工作台核心增设「考研总分预测与目标达成评估」专区**：
+  - **总分预测与目标对比**：根据最新模考加权算法或真题正确率动态测算当前预估考研总分（满分 500），并与目标总分实时对比（差值 Chip 呈现超额或差距）；
+  - **智能提分冲刺建议**：根据总分差距自动给出达标建议与冲刺方向；
+  - **单科预测得分明细**：政治（100分）、英语（100分）、业务课一（150分）、业务课二（150分）各科预估得分、目标分与 Hero UI 进度条；
+  - **模考总分走势微折线图**：展示历史模考总分涨落趋势，支持一键开考。
+- **核心数据看板与全景**：
+  - 顶部考研倒计时 Hero Banner 与核心操作快捷入口；
+  - 4 宫格核心备考指标卡片（模拟考记录、历年真题实刷数、薄弱错题缺口、有效专注时长）；
+  - 科目大纲掌握度全景（Hero UI `CircularProgress` 环形进度圈，直达科目大纲）；
+  - 近期实战记录（聚合真题与模考的最新作答记录）。
+- **模考无缝融入真题管理（去除冗余栏目）**：
+  - 侧边栏与路由中移除独立的 `/mocks` 入口，将原真题管理更名为「真题 & 模考」；
+  - 在 `Papers.tsx` 顶部使用 Hero UI 标准分段控制器（Segmented Control）平滑切换「历年真题」与「全真模拟考」；
+  - 全真模考包含：总分走势折线图、AI 智能考场（含 2027 政治 33 题在线考试与解析）、历次模考成绩明细、手动录入模考弹窗及 AI 测验出卷；
+  - 原 `/mocks` 路由自动重定向至 `/papers?tab=mocks`，兼顾兼容性与简洁性。
+
+### 3.9 分数预测卡片布局重构与非考研科目过滤（针对用户截图反馈排版问题）
+- **根因分析**：
+  1. 用户截图中左侧卡片出现大面积留白，原因是右侧科目过多导致单列纵向拉伸，而左侧 `justify-content: space-between` 将内容顶到两端；
+  2. 用户在数据中创建的非考试分类（如“紧急”、“学习”）被读取并默认为 150 分满分的考研科目展示，导致出现“紧急 (满分 150)”等不合理内容；
+  3. 标题使用了非标准的文字符号 `◎`，右侧进度条为单调突兀的纯蓝粗条。
+- **重构方案与落地**：
+  - **科目清洗与优先排序 (`coreExamSubjects`)**：过滤掉 `['紧急', '学习', '日常', '临时', '待办', '杂项', '综合']` 等非考研学科名称，按考研 4 门统考科目（政治、英语、数学/专业课一、专业课二）排序，精准锁定 4 门核心统考课；
+  - **左侧表盘仪表化 (`score-dial-wrap`)**：采用 Hero UI 渐变弧形 SVG 环形仪表盘（136px），预估总分（如 `365`）居中放大，下方紧凑配置差值 Chip 与直达考场按钮，完全消除内部空间塌陷与空白死角；
+  - **右侧矩阵化 (`prediction-subjects-grid`)**：改为 **2×2 紧凑方阵**，4 门科目各占一格，内含科目名、达标/冲刺徽标、分数对比、5px 圆角胶囊进度条与考点掌握度，高度与左侧仪表盘严密对齐（~250px）；
+  - **诊断条与走势微图**：下方配齐浅色调智能提分诊断横幅与模考走势微折线图，整体页面饱满专业，完全符合 Hero UI 的高标准。
+
+### 3.10 学习计划去阶段化（移除「阶段计划」模块）
+- **变更背景**：用户明确要求移除学习计划中的阶段计划，使该页面彻底专注于纯粹的日历排程、每日任务与备考笔记管理。
+- **改动详情**：
+  - 从 `src/pages/Plans.tsx` 中彻底移除了 `<section className="plan-overview">`（包括阶段计划卡片网格、AI 草案生成、新建/编辑/归档计划弹窗等冗余逻辑）；
+  - 简化了任务新建弹窗（`taskModal`），移除了无意义的“所属计划”关联项；
+  - 清理了 `styles.css` 中对 `plan-overview` 的 order 排序规则，保留了月历、本周、今日等核心排程视图的干净布局；
+  - 更新了顶栏二级副标题为「日历排程与每日复习安排」。
+
+---
+
+## 4. 关键交互原则与用户偏好（非常重要）
+
+用户具有非常明确的美学与交互偏好，在后续迭代中**必须严格遵守**：
+
+1. **绝对禁止五颜六色的点**：
+   - 不要在科目列表、筛选栏、标题前加红绿蓝紫的彩色实心圆点。
+   - 状态识别使用文字字重、Hero UI 徽标（`<Chip variant="flat">`）或标准图标。
+2. **系统严禁使用 Emoji 充当图标**：
+   - 不要写 `✍️ 进入考试`、`💬 呼叫 AI`、`🎯 目标` 等；
+   - 必须使用 `lucide-react` 中的矢量 SVG 图标组件配合文字。
+3. **极简文案原则（拒绝冗长说教）**：
+   - 除非绝对必要，不要添加多余的解释性长句（如免责声明、弹窗顶部的使用说明段落等）；
+   - 选项文字保持干练短词（如直接使用 `低档 / 中档 / 高档`，不要在括号里塞入几十个字的解释）。
+4. **Hero UI 现代化质感**：
+   - 偏好 Hero UI (原 NextUI) 风格：大圆角（`12px~16px`）、扁平半透明底色（`variant="flat"`）、克制的 Accent 蓝色、清晰的排版层级与微动效。
+5. **固定元素坚决吸顶**：
+   - 顶部栏必须固定在视口最上方，页面滚动时不可出现位移或被覆盖。
+
+---
+
+## 5. 踩过的坑与避坑指南 (Gotchas)
+
+1. **`position: sticky` 踩坑**：
+   - 父级容器如果有 `overflow-x: hidden`，会直接破坏 sticky 行为。解决方式是改为固定定位 `position: fixed; top: 0; left: var(--sidebar); right: 0;` 并配合 `overflow-x: clip;`。
+2. **列表项 hover 按钮挤压变形**：
+   - 在固定高度（如 `52px`）且有两行内容的卡片中，次要操作按钮（如删除图标）如果直接浮动在右下角，容器空间不足会导致 SVG 发生挤压，甚至看起来像数字“8”。必须设定 `min-height: auto`、给予充足 padding，并将图标按钮尺寸设为确定值（如 `20x20px`）及 `flex-shrink: 0`。
+3. **大模型更新过快导致的硬编码死穴**：
+   - 不要用写死的 `<select>` 限制可用的模型名字。提供 `<input>` 允许自由输入并附带快捷填入标签（Chips）是最长效的方案。
+4. **模拟试卷的单选与多选逻辑区别**：
+   - 考研政治分为 16 道单选与 17 道多选。答题状态中，单选题必须是单选替换，多选题必须是数组复选（包含勾选与反选），交卷判定时多选要求全对才得分（考研规则：多选、少选、错选均不得分）。
+5. **模考记录同步联动**：
+   - 同步到模考记录时，除了写入 `mock_exams`（总览），还要同步写入 `mock_scores`（科目得分明细），这样 `/mocks` 页面以及 Dashboard 的总分走势图与雷达图才能正确点亮。
+
+---
+
+## 6. 当前状态与下一步建议计划
+
+### 当前状态
+- 代码全部通过静态检查与 TypeScript 类型校验。
+- 全站无报错、无 Emoji 视觉污染、无杂色圆点。
+- 考研政治 33 题在线考场与模考联动全链路闭环可用。
+
+### 下一步建议推进项
+1. **扩充其他科目全真模拟卷题库（`mockPaperStore.ts`）**：
+   - 增加「考研英语一/二」客观题真题套卷（完形填空 20 题 + 阅读理解 20 题 + 新题型 5 题）；
+   - 增加「考研数学一/二/三」选择题与填空题全真套卷；
+   - 增加「408 计算机学科专业基础」40 道选择题模拟套卷。
+2. **AI 在线动态出卷直连增强**：
+   - 当前已支持根据用户输入的 API Key 本地直连 DeepSeek / OpenAI API；可进一步丰富大模型根据错题本知识点实时组卷的 prompt 模板。
+3. **在线考试答题卡交卷前的未答题提醒**：
+   - 在点击提交试卷时，如果答题卡上尚有题号未作答，高亮跳动未答题号并弹窗二次确认。

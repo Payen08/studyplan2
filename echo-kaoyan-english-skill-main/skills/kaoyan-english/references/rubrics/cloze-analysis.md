@@ -1,0 +1,190 @@
+# Cloze Analysis Rubric
+
+Use this for Section I Use of English. Cloze explanations must use a different scheme from reading explanations. Do not force cloze questions into the reading format of paragraph evidence and reading option traps. Cloze is about the blank position, local grammar, collocation, semantic fit, and discourse logic.
+
+If `cloze.md` contains an `Echo 完形整体难点评析与易错点总结` block, use that block as whole-passage background for topic, answer chain, and common error patterns. Do not replace blank-level analysis with the block; still locate and analyze the requested blank directly from the original cloze text.
+
+## Required Behavior
+
+When explaining a cloze blank, use a context-first, option-comparison style. Do not give short comments such as "A 搭配正确". Each explanation should show why the blank needs a specific word or phrase and why nearby alternatives fail.
+
+Use ordinary Markdown paragraphs or blockquotes for all user-facing excerpts, question text, options, translations, and explanations. Do not use fenced code blocks for cloze context, option lists, or answer prose, because they force horizontal scrolling in Codex.
+
+1. Start with blank trap classification. Identify exam track, year, section, blank number, official answer, test point, and the core trap pattern.
+2. Paste the context window around the blank, not only the blank-containing sentence. Always display the full sentence containing the blank without ellipses, and include up to three sentences before and three sentences after it from the same paragraph. If the paragraph has fewer surrounding sentences or the window would cross paragraph boundaries, show the whole paragraph instead.
+3. Mark the blank directly inside the excerpt as `**___ 5 ___**（空格：...）`. Bold the word or phrase that controls the answer and add labels such as `（搭配：...）`, `（语法：...）`, `（逻辑：...）`, `（指代：...）`, or `（复现：...）`.
+4. Add a Chinese reference translation immediately after the excerpt. Preserve the same labels so lower-level students can understand what controls the blank.
+5. Display the blank number and all A-D options after the context and translation. In the `完整题目` section, arrange the four English options horizontally on one line, then arrange the four corresponding Chinese translations horizontally on the next line.
+6. Explain what the blank needs before analyzing options: part of speech, sentence role, controlled collocation, semantic direction, and discourse relation.
+7. Explain the wrong options before explaining the correct option. Use elimination reasoning as the main option-analysis method: for every wrong option, show its complete option text first, explain why it may look possible, compare it against the blank's part of speech, collocation, semantic direction, and discourse logic, then name the trap type.
+8. Explain why the correct option fits through exact local context, collocation, grammar, and discourse logic after the wrong-option analysis. Present it as the only option left after the grammar, collocation, and logic filters have eliminated the distractors.
+9. End with a reusable memory cue or method takeaway.
+
+## Output Format
+
+Use exactly this structure.
+
+## Template Compliance Gate
+
+The following eight headings are mandatory and must appear exactly as written for every single cloze blank:
+
+1. `空格陷阱分类`
+2. `相关原文截取`
+3. `中文参考翻译`
+4. `完整题目`
+5. `空格处需要什么`
+6. `其他选项为什么错`
+7. `为什么选 [Answer]`
+8. `本空复盘`
+
+Before finalizing, check the draft against this list. If any heading is missing, renamed, merged, or replaced by a similar heading, rewrite the answer before sending it.
+
+Every cloze explanation must include the full blank-containing sentence, the Chinese translation of the quoted context, and all A-D options in the horizontal cloze layout. If the full context/options are not in context, load the relevant corpus file before answering. Do not produce a shortened answer that only gives the answer and a few option comments.
+
+## Professional Style Reference
+
+Use the following as the professional style template for cloze explanations. It is a style reference, not a replacement for the required section order below: keep `空格陷阱分类 -> 相关原文截取 -> 中文参考翻译 -> 完整题目 -> 空格处需要什么 -> 其他选项为什么错 -> 为什么选 [Answer] -> 本空复盘`.
+
+The answer should read like a teacher showing how the blank is controlled by local grammar, collocation, semantic direction, and discourse logic:
+
+- Start each requested blank with a clear label such as `第 1 空`, then give `空格陷阱分类` with year, exam track, section, blank number, indexed answer, test point, and core trap.
+- In `相关原文截取`, display the full sentence containing the blank without ellipses. Mark the blank as `**___ 1 ___**（空格：...）`, and directly mark the controlling clues, such as `**levels out**（逻辑：...）` and `**decline**（逻辑：...）`.
+- In `中文参考翻译`, translate the quoted context naturally and preserve the same labels. The translation should help weaker students see the trend, contrast, cause, reference, or collocation without re-parsing the English.
+- In `完整题目`, keep the cloze-specific horizontal option layout. Put the four English options on one line and the four Chinese translations on the next line, so the student can compare options quickly.
+- In `空格处需要什么`, explain the needed part of speech, sentence role, subject or object, nearby controlling words, and the required semantic direction. This section should make the answer feel inevitable before option comparison begins.
+- In `其他选项为什么错`, analyze wrong options before the correct option. Use elimination reasoning: for each wrong option, show the complete option, give the Chinese meaning, explain why it may look possible, identify the grammar/collocation/logic filter it fails, and label the trap type.
+- In `为什么选 [Answer]`, show the correct option and explain how it completes the sentence. Emphasize local evidence chains such as `peaks -> levels out -> decline`, `cause -> result`, `contrast -> correction`, or `pronoun -> referent`.
+- In `本空复盘`, give a short reusable method, such as "不要孤立看一个空，要把并列动词串起来看" or "先判断逻辑方向，再比较近义词".
+
+Model phrasing pattern:
+
+> 空格处需要一个不及物动词，主语是 `It`，指代前文的 `Fluid intelligence`。后面连续出现 `levels out` 和 `decline`，说明这里要表达一种发展趋势：先达到某个高点，之后维持一段时间，再慢慢下降。因此空格不能只是“变化”，而要能和后面的“持平、下降”构成完整曲线。
+>
+> [Wrong option] 的意思是“...”。它看起来像是在描述变化，但原文这里需要的是“...”，而不是“...”。如果填入这个词，就会破坏 `... -> ... -> ...` 的趋势链。陷阱类型：语义方向错误 / 搭配错误 / 逻辑关系错误。
+>
+> 选 [Answer]。`...` 作动词表示“...”，放入原句后是：……。这个逻辑正好和后文的 `...`、`...` 构成时间顺序上的变化曲线，所以它不是孤立词义正确，而是被上下文逻辑锁定。
+
+### 空格陷阱分类
+
+Include:
+
+- 年份
+- 科目
+- 题型：完形填空 / Section I Use of English
+- 空格号
+- 正确答案
+- 考点类型
+- 核心陷阱
+
+If the user claims a different answer from the indexed answer, state the indexed answer clearly and explain that the following analysis follows the indexed answer.
+
+### 相关原文截取
+
+Paste the local context needed to solve the blank. The sentence containing the blank must be displayed in full and must not use `...` or ellipses, because its grammar and collocation are the evidence. Do not show only the blank-containing sentence. Include up to three sentences before it and three sentences after it from the same paragraph. If there are not enough sentences before/after, or if the three-sentence window would cross paragraph boundaries, show that paragraph in full instead. Do not paste the whole passage unless the blank truly depends on the whole passage topic.
+
+Display all included surrounding sentences fully by default. Only omit a long unrelated inserted phrase when it is truly irrelevant to the blank, and state the omission clearly; do not omit words from the blank-containing clause itself.
+
+Use this format:
+
+> Full previous sentence if needed.
+> Full sentence with **___ 5 ___**（空格：需要判断...） and **key local clue**（搭配/语法/逻辑：...）.
+> Full following sentence if needed.
+
+### 中文参考翻译
+
+Translate the quoted context into natural Chinese. Keep labels after the corresponding phrase.
+
+Use this format:
+
+> 上一句中文，如果需要。
+> 带有**第 5 空**（空格：需要判断...）和**关键线索**（搭配/语法/逻辑：...）的句子中文。
+> 下一句中文，如果需要。
+
+### 完整题目
+
+Display the blank number and all options exactly as they appear in the corpus. For cloze only, show the four English options horizontally on one line, then show the corresponding Chinese translations horizontally on the next line. Keep the option letters aligned with their translations. Do not use the vertical one-option-per-line format in this section.
+
+Use this format:
+
+5.
+[A] Full option A.    [B] Full option B.    [C] Full option C.    [D] Full option D.
+中文：[A] A 选项中文翻译。    [B] B 选项中文翻译。    [C] C 选项中文翻译。    [D] D 选项中文翻译。
+
+### 空格处需要什么
+
+Explain in Chinese:
+
+- the part of speech needed by the blank
+- the sentence role of the blank
+- the word, phrase, or structure before/after the blank that controls the answer
+- whether the logic is cause, result, contrast, concession, parallel, example, summary, or progression
+- what meaning the completed sentence must express
+
+This section is the core of cloze explanation. Prioritize context and collocation over isolated dictionary meanings.
+
+### 其他选项为什么错
+
+Explain the wrong options before the correct-option analysis. Do not write `已在上文解释` for the correct option here, because the correct option will be explained in the next section. For every wrong option, include:
+
+- the complete option text
+- the option's basic meaning
+- why it may look possible when viewed only from Chinese meaning or isolated vocabulary
+- which filter eliminates it: part of speech, sentence role, collocation, semantic direction, discourse logic, or reference relation
+- why it fails against the blank's grammar, collocation, or logic
+- trap type
+
+Use this format for each option:
+
+A. [A] Full option text.  
+中文：...  
+分析：...  
+陷阱类型：...
+
+Each wrong-option explanation should be a complete paragraph, not a one-line dismissal. Do not merely say "不符合语境"; state the exact reason, such as wrong semantic direction, impossible collocation, repeated meaning, broken progression, wrong referent, or mismatch with the required sentence role.
+
+### 为什么选 [Answer]
+
+Start by displaying the complete correct option text, then explain in one or more full paragraphs:
+
+- how the option fits the needed part of speech and grammar
+- how it forms a natural collocation with nearby words
+- how it matches the local sentence meaning
+- how it matches the broader discourse logic when relevant
+- why the grammar, collocation, and logic filters eliminate the other options and leave this one as the best answer
+
+Use this mini-format when helpful:
+
+- 选项中的 `...` 与原文中的 `...` 构成搭配
+- 选项中的 `...` 补足句子中的 `...` 成分
+- 选项中的 `...` 呼应上文/下文的 `...`
+
+### 本空复盘
+
+Give a practical takeaway. Mention the controlling clue, the reusable collocation or logic pattern, and what trap the student should watch for in future cloze blanks.
+
+## Batch Cloze Explanation Rule
+
+When the user asks about multiple cloze blanks in one request, do not switch to a brief answer-key mode. Answer up to five blanks in the same response, and apply the full single-blank structure independently to every blank.
+
+For requests containing one to five blanks, complete all requested blanks in one response while preserving the full quality bar for each blank. Do not reduce context, Chinese translation, option display, correct-option explanation, wrong-option explanation, or trap classification just because the request contains several blanks.
+
+If the user asks for more than five blanks, give an answer table for all requested blanks first, then split detailed explanations into batches of at most five blanks.
+
+## Cloze Trap Types
+
+Use these Chinese labels for wrong options:
+
+- 近义词混淆: the option has a similar dictionary meaning but does not fit the exact context.
+- 搭配错误: the option does not naturally combine with the nearby word or phrase.
+- 语法结构不匹配: the option does not fit the needed part of speech, clause pattern, or sentence role.
+- 语义方向错误: the option has the wrong positive/negative, increase/decrease, active/passive, or abstract/concrete direction.
+- 逻辑关系错误: the option breaks cause, result, contrast, concession, parallel, progression, or summary logic.
+- 指代关系错误: the option misreads what a pronoun, noun phrase, or reference points to.
+- 情感色彩不符: the option has the wrong tone, attitude, or evaluation.
+- 原文复现误导: the option repeats a nearby word or topic but does not complete the blank correctly.
+- 固定短语误判: the option looks plausible but does not form the required phrase.
+- 只看中文误选: the option's Chinese meaning seems possible, but the English usage is wrong.
+
+## Quality Bar
+
+Prefer detailed, coherent paragraphs over scattered notes. A cloze explanation is successful when the student can see the exact clue that controls the blank and can explain why each distractor fails.

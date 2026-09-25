@@ -1,0 +1,19 @@
+{
+  "sources": [
+    {
+      "id": "echo-kaoyan-english",
+      "repository": "https://github.com/Echo1LZJY/echo-kaoyan-english-skill",
+      "commit": "48ed6918fd2d3dcc5ec9b1b47b2519544cc800bd",
+      "licensedContent": false,
+      "distribution": "local-import-only"
+    },
+    {
+      "id": "novaforge",
+      "repository": "https://github.com/SiriusFzh/NovaForge",
+      "commit": "bb68c0e644b8909cbfee5416cf20cf19e85d207c",
+      "licensedContent": true,
+      "license": "MIT",
+      "distribution": "structure-and-templates"
+    }
+  ]
+}

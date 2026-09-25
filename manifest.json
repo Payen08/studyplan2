@@ -1,13 +1,13 @@
 {
-  "name": "Study Plan - 学习计划",
+  "name": "学习工作台",
   "short_name": "学习计划",
-  "description": "考研冲刺学习计划管理工具",
+  "description": "计划、记录、笔记与复盘一体化学习工作台",
   "id": "/study-plan/",
-  "start_url": "/study-plan/?v=sync-fix-2026-04-27-pwa-refresh-v2",
+  "start_url": "/study-plan/",
   "scope": "/study-plan/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#f8fafc",
+  "background_color": "#f4f4f5",
+  "theme_color": "#006fee",
   "orientation": "portrait-primary",
   "icons": [
     {

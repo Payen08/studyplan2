@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Production / Build outputs
+dist/
+dist-ssr/
+dev-dist/
+build/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Local content and cache
+.local-content/
+.cache/
+.vite/
+.turbo/
+*.tsbuildinfo
+
+# Generated config
+vite.config.js
+vite.config.d.ts
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# macOS / OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# IDE / Editor files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
