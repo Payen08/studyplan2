@@ -1,9 +1,8 @@
 name: Supabase Keepalive
 
 on:
-  schedule:
-    # 每天北京时间 09:17（GitHub Actions 使用 UTC）
-    - cron: "17 1 * * *"
+  # Run manually until SUPABASE_ANON_KEY is configured.
+  # The daily schedule is disabled to stop repeated failure notifications.
   workflow_dispatch:
 
 permissions:
